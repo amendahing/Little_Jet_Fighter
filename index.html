@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>Little Jet Fighter</title>
+</head>
+<body>
+  <style type="text/css">
+    *{
+      padding: 0px;
+      margin: 0px;
+    }
+    body {
+      overflow-y: hidden; 
+    }
+    #sky{
+      background-image: url("sky.png");
+      width: 100%;
+      height: 640px;
+      position: relative;
+    }
+    .player{
+      background-image: url("jet.png");
+      background-size: 110%;
+      background-repeat: no-repeat;
+      width: 70px;
+      height: 75px;
+      position: absolute;
+    }
+    .enemy{
+      background-image: url("enemy.png");
+      width: 70px;
+      height: 75px;
+      position: absolute;
+    }
+    .enemy-lasers{
+      background-color: red;
+      width: 5px;
+      height: 20px;
+      position: absolute;
+    }
+    .missiles {
+      background-color: yellow;
+      width: 5px;
+      height: 20px;
+      position: absolute;
+    }
+  </style>
+
+  <div id="sky">
+    <div id="player"></div>
+    <div id="missiles"></div>
+    <div id="enemy-lasers"></div>
+    <div id="enemies"></div>
+  </div>
+
+  <script type="text/javascript">
+//---------------------POSITION-----------------------------
+    var player = {
+      left: 450,
+      top: 550
+    }
+
+    var missiles = [ ]
+
+    var enemies = [
+      {left: 350,top: 100},
+      {left: 450,top: 150},
+      {left: 550,top: 100},
+      {left: 650,top: 150},
+    ]
+
+    var enemyLasers = [
+      {left: 384,top: 110},
+      {left: 484,top: 160},
+      {left: 384,top: 210},
+      {left: 484,top: 260},
+    ]
+//----------------DRAW PLAYER/ENEMIES------------------------
+    function drawPlayer() {
+      content = "<div class= 'player' style='left: " +player.left+ "px" + "; top: " +player.top+ "px" + "'></div>";
+
+      document.getElementById('player').innerHTML = content;
+    }
+
+    function drawMissiles() {
+      content = "";
+      for (var idx = 0; idx < missiles.length; idx++) {
+        content += "<div class= 'missiles' style='left: " +missiles[idx].left+ "px; top: " + missiles[idx].top + "px'></div>";
+      }
+      document.getElementById('missiles').innerHTML = content;
+    }
+    drawMissiles();
+
+    function drawEnemies() {
+      content = "";
+      for (var idx = 0; idx < enemies.length; idx++) {
+      content += "<div class= 'enemy' style='left: " +enemies[idx].left+ "px" + "; top: " +enemies[idx].top+ "px" + "'></div>";
+      }
+      document.getElementById('enemies').innerHTML = content;
+    }
+
+    function drawEnemyLasers() {
+      content = "";
+      for (var idx = 0; idx < enemyLasers.length; idx++) {
+      content += "<div class= 'enemy-lasers' style='left: " +enemyLasers[idx].left+ "px" + "; top: " +enemyLasers[idx].top+ "px" + "'></div>";
+      }
+      document.getElementById('enemy-lasers').innerHTML = content;
+    }
+//--------------MOVE PLAYER & ENEMIES-----------------------
+    document.onkeydown = function(e) {
+      // console.log(e.keyCode, e.key);
+
+      if ((e.keyCode == 38) && (player.top != 380)) { //UP
+        player.top = player.top - 10;
+      } else if ((e.keyCode == 40) && (player.top != 570)) { //DOWN
+        player.top = player.top + 10;
+      } else if ((e.keyCode == 37) && (player.left != 10)) { // LEFT
+        player.left = player.left - 10;
+      } else if (e.keyCode == 39) { // RIGHT
+        player.left = player.left + 10;
+      } else if (e.keyCode == 32) { // FIRE MISSILES
+        missiles.push({left: (player.left + 30), top: (player.top - 8 )})
+        drawMissiles();
+      }
+      drawPlayer();
+    }
+
+    function moveMissiles() {
+      for (var idx = 0; idx < missiles.length; idx++) {
+          missiles[idx].top = missiles[idx].top - 9;
+      }
+    }
+
+    function moveEnemies() {
+      for (var idx = 0; idx < enemies.length; idx++) {
+        enemies[idx].top = enemies[idx].top + 2;
+      }
+    }
+
+    function moveEnemyLasers() {
+      for (var idx = 0; idx < enemyLasers.length; idx++) {
+        enemyLasers[idx].top = enemyLasers[idx].top + 8;
+      }
+    }
+
+//---------------------GAME LOOP----------------------------
+  var element = document.getElementById('enemy-lasers');
+
+
+    function gameLoop() {
+      drawPlayer();
+      drawMissiles();
+      if (enemies[0].top <= 660) {
+        moveEnemies();
+      }
+      drawEnemies();
+      // console.log("top: "+ player.top, "left: " + player.left);
+      setTimeout(gameLoop, 60);
+    }
+    gameLoop();
+
+    function enemyLaserLoop(){
+      moveMissiles()
+      drawEnemyLasers();
+      if (enemyLasers[0].top <= 662) {
+        moveEnemyLasers();
+      }
+
+    setTimeout(enemyLaserLoop, 50);
+    console.log("enemyLasers [0]: ", enemyLasers[0].top);
+    }
+    enemyLaserLoop();
+
+
+  </script>
+
+</body>
+</html>
